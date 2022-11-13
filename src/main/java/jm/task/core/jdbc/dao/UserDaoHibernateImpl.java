@@ -7,7 +7,17 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+    Комментарий №1 - Методы создания и удаления таблицы пользователей в классе UserHibernateDaoImpl
+        должны быть реализованы с помощью SQL. - остальные с помошью HQL
+    Что сделано:
+    В методе getAllUsers()
+        строка          userList = session.createSQLQuery("FROM User;").getResultList();
+        заменена на     userList = session.createQuery("FROM User").getResultList();
+    В методе cleanUsersTable()
+        строка          session.createSQLQuery("TRUNCATE TABLE User;").executeUpdate();
+        заменена на     session.createQuery("DELETE FROM User");
+*/
 
 public class UserDaoHibernateImpl implements UserDao {
     private SessionFactory sessionFactory = Util.getSessionFactory();
@@ -84,7 +94,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         try (final Session session = sessionFactory.openSession()) {
-            userList = session.createSQLQuery("SELECT * FROM User;").getResultList();
+            userList = session.createQuery("FROM User").getResultList();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,7 +107,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try (final Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery("TRUNCATE TABLE User;").executeUpdate();
+            session.createQuery("DELETE FROM User");
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
