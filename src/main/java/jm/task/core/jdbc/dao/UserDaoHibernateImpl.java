@@ -7,17 +7,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import java.util.ArrayList;
 import java.util.List;
-/*
-    Комментарий №1 - Методы создания и удаления таблицы пользователей в классе UserHibernateDaoImpl
-        должны быть реализованы с помощью SQL. - остальные с помошью HQL
-    Что сделано:
-    В методе getAllUsers()
-        строка          userList = session.createSQLQuery("FROM User;").getResultList();
-        заменена на     userList = session.createQuery("FROM User").getResultList();
-    В методе cleanUsersTable()
-        строка          session.createSQLQuery("TRUNCATE TABLE User;").executeUpdate();
-        заменена на     session.createQuery("DELETE FROM User");
-*/
 
 public class UserDaoHibernateImpl implements UserDao {
     private SessionFactory sessionFactory = Util.getSessionFactory();
@@ -28,11 +17,17 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS User (
+                    id BIGINT PRIMARY KEY AUTO_INCREMENT, 
+                    name VARCHAR(45), 
+                    last_name VARCHAR(45), 
+                    age INT);
+                """;
         Transaction transaction = null;
         try (final Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery("CREATE TABLE IF NOT EXISTS User (id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
-                    "name VARCHAR(45), last_name VARCHAR(45), age INT);").addEntity(User.class).executeUpdate();
+            session.createSQLQuery(sql).addEntity(User.class).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -44,10 +39,13 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void dropUsersTable() {
+        String sql = """
+                     DROP TABLE IF EXISTS User;
+                     """;
         Transaction transaction = null;
         try (final Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery("DROP TABLE IF EXISTS User;").addEntity(User.class).executeUpdate();
+            session.createSQLQuery(sql).addEntity(User.class).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -92,9 +90,12 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
+        String sql = """
+                     FROM User
+                     """;
         List<User> userList = new ArrayList<>();
         try (final Session session = sessionFactory.openSession()) {
-            userList = session.createQuery("FROM User").getResultList();
+            userList = session.createQuery(sql).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,10 +105,13 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void cleanUsersTable() {
+        String sql = """
+                     DELETE FROM User
+                     """;
         Transaction transaction = null;
         try (final Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createQuery("DELETE FROM User");
+            session.createQuery(sql);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {

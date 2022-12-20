@@ -14,8 +14,15 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
+        String sql = """
+                     CREATE TABLE IF NOT EXISTS User (
+                        id BIGINT PRIMARY KEY AUTO_INCREMENT, 
+                        name VARCHAR(45), 
+                        last_name VARCHAR(45), 
+                        age INT);
+                     """;
         try {
-            Util.connection().createStatement().execute("CREATE TABLE IF NOT EXISTS User (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(45), last_name VARCHAR(45), age INT);");
+            Util.connection().createStatement().execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -23,8 +30,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
+        String sql = """
+                     DROP TABLE IF EXISTS User;
+                     """;
         try {
-            Util.connection().createStatement().execute("DROP TABLE IF EXISTS User;");
+            Util.connection().createStatement().execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -50,10 +60,13 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public List<User> getAllUsers() {
+        String sql = """
+                     SELECT * From User;
+                     """;
         List<User> people = new ArrayList<>();
         ResultSet res = null;
         try {
-            res = Util.connection().createStatement().executeQuery("SELECT * From User;");
+            res = Util.connection().createStatement().executeQuery(sql);
             while (res.next()) {
                 User user = new User();
                 user.setId(res.getLong(1));
@@ -70,8 +83,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
+        String sql = """
+                     TRUNCATE User;
+                     """;
         try{
-            Util.connection().createStatement().execute("TRUNCATE User;");
+            Util.connection().createStatement().execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -5,17 +5,6 @@ import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 import java.util.List;
 
-/*
-    Комментарий №3: использовать полиморфизм, обращаться к классу через интерфейс
-
-    Как было:
-        UserDaoJDBCImpl userDao = new UserDaoJDBCImpl();
-    Должно быть:
-        UserDao userDao = new UserDaoJDBCImpl();
-    Чтобы это заработало, необходимо было добавить импорт:
-        import jm.task.core.jdbc.dao.UserDao;
-*/
-
 public class UserServiceImpl implements UserService {
     private final UserDao userDao = new UserDaoJDBCImpl();
 

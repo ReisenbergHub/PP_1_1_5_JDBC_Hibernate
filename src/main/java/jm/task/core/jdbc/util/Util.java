@@ -49,9 +49,6 @@ public class Util {
     public static Connection connection() throws SQLException {
         DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
         Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        if (!connection.isClosed()) {
-//            System.out.println("Connection established");
-        }
         return connection;
     }
 }
